@@ -28,11 +28,14 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(IP, PORT)
 
 #Opening and reading the file data
-file = open("data/yt.txt", "r")
-data = file.read()
+file = open("data/SysAdminCronJob.txt", "r")
+try: 
+    data = file.read()
+except:
+    print("File does not exist.")
 
 #Sending the filename to the server
-client.send("yt.txt".encode(FORMAT))
+client.send("SysAdminCronJob.txt".encode(FORMAT))
 msg = client.recv(SIZE).decode(FORMAT)
 
 print(f"[SERVER]: {msg}")
@@ -49,9 +52,12 @@ file.close()
 client.close()
 if __name__ == "__main__":
     
-main()
+try: 
+    main()
+except: 
+    print("An error has occured.")
+ 
 
-#Put try except for error handling. If sysadmin.py does not exist.
 
 
 
