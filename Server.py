@@ -5,27 +5,38 @@ This file connects to the client and obtains information from the client.
 Appends information to a file created on the server.
 Terminate connection once information is received and input into file.
 
+Server Socket:
+socket
+bind
+listen
+accept
+--connect--
+recieve
+send
+receive
+close
+
 Abigail Sauco
 000860402
 07.07.22
 
 """
 
-#import module
+#import modules
 import socket
 import sys
 
-#Define variables
+#fefine variables
 IP = socket.gethostbyname()
 PORT = 4455
 SIZE = 1024
 FORMAT = "utf-8"
 
-def main():
-    
-print("[STARTING]")
+#define main which is the bulk of the program that you will be running
+def main(): 
+    print("[STARTING]")
 
-#Start TCP socket
+#initialize TCP socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 #bind IP and port to server
@@ -37,36 +48,35 @@ print("[LISTENING]")
 
 while True:
 
-#Server has accepted the connection from the client
-conn, addr = server.accept()
+#make server accept connection
+    connect, addr = server.accept()
 print(f"[ESTABLISHING CONNECTION] {addr} ")
 
-#Receive file from the client
-filename = conn.recv(SIZE).decode(FORMAT)
-print(f"[RECIEVING FILE]")
+#receive file from client
+filename = connect.recv(SIZE).decode(FORMAT)
+print(f"[RECEIVING FILE]")
 
-#write into file
+#open file
 file = open(filename, "w")
-conn.send("FILE RECEIVED".encode(FORMAT))
+connect.send("FILE RECEIVED".encode(FORMAT))
 
-#Receive the file data from the client
-data = conn.recv(SIZE).decode(FORMAT)
+#receive file data into client, and write into file
+data = connect.recv(SIZE).decode(FORMAT)
 print(f"[RECV] Receiving the file data.")
 file.write(data)
-conn.send("File data received".encode(FORMAT))
+connect.send("File data received".encode(FORMAT))
 
 #close file
 file.close()
 
 #close connection
-conn.close()
+connect.close()
 
+#print disconnected
 print(f"[DISCONNECTED] {addr} ")
 if __name__ == "__main__":
-    
-main()
 
-#Put try except for error handling. If sysadmin.py does not exist.
-
-
-
+    try:    
+        main()
+    except:
+        print("Connection cannot be initialized.")
