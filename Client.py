@@ -1,66 +1,79 @@
-"""
-ClientScript
+'''SysAdminTask.py
 
-This file establishes a connection to the server and transmits information.
-Appends information to a file created on the server.
-Terminate connection once information is received and input into file.
+This script obtains the following:
+•User name
+•Computer name
+•Date and time (formatted in an easily readable format such as HH:MM:SS DD/MM/YYYY )
+•number of processes running
+•Top 10 process NAMES/Command, ID and Memory listed and sorted from most Memory % used on machine first
 
-Client Socket:
-socket
-connect
-send
-receive
-close
-
-Abigail Sauco
+AbigailSauco
 000860402
-07.07.22
+12.07.22
 
-"""
+'''
 
 #import modules
-import CronTab
-import socket
+import os
+import platform
+import psutil
+import pandas #used for nlargest to sort memory percentage from largest to smallest by 
 
-IP = socket.gethostbyname(socket.gethostname())
-PORT = 4455
-FORMAT = "utf-8"
-SIZE = 1024
-def main():
+#import datetime and pytz for correct time zone
+import datetime
+import pytz
+
+#create txt file
+f = ("SysAdminCronJob.txt","x")
+
+#retrieve user name
+print("USER NAME:"+ os.getlogin())
+
+with open("SysAdminCronJob.txt", "a") as f:
+	f.write("USER NAME:"+ os.getlogin())
+
+#retrieve computer name
+print("COMPUTER_NAME:"+ platform.machine())
+
+with open("SysAdminCronJob.txt", "a") as f:
+	f.write("COMPUTER_NAME:"+ platform.machine())
+
+#retrieve date and time ( YYYY/MM/DD HH:MM:SS )
+current_time = datetime.datetime.now(pytz.timezone('Canada/Mountain'))
+print("DATE AND TIME:" + current_time)
+
+with open("SysAdminCronJob.txt", "a") as f:
+	f.write("DATE AND TIME:" + current_time)
+
+#retrieve no. of processes running
+c = 0
+
+for process in psutil.process_iter ():
+    c = c+1
     
-#Staring a TCP socket
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+print("\nThe total number of processes currently running is: ", c)
 
-#Connecting to the server
-client.connect(IP, PORT)
+with open("SysAdminCronJob.txt", "a") as f:
+	f.write("TOTAL # of PROCESSES RUNNING:" + c)
 
-#Opening and reading the file data
-file = open("data/SysAdminCronJob.txt", "r")
+#List top ten processes NAMES/Command, ID and memory sorted from most memory.
+processArray = []
+processObj = psutil.process_iter(attrs=None, ad_value=None)
+print(processObj)
 
-try: 
-    data = file.read()
-except:
-    print("File does not exist.")
+lines=0
 
-#Sending the filename to the server
-client.send("SysAdminCronJob.txt".encode(FORMAT))
-msg = client.recv(SIZE).decode(FORMAT)
+for proc in processObj:
+	processArray.append([proc.pid, proc.name(), proc.memory_percent()])
 
-print(f"[SERVER]: {msg}")
+sortedMem = sorted(processArray, key=lambda record:record[2], reverse=True).nlargest(n=10, columns=[proc.memory_percent()])
 
-#Sending the file data to the server
-client.send(data.encode(FORMAT))
-msg = client.recv(SIZE).decode(FORMAT)
-print(f"[SERVER]: {msg}")
+for p in range (0, 10, 1):
+	print(p)
 
-#close file
-file.close()
+print("TOP 10 PROCESSESS: " + p)
 
-#close connection
-client.close()
-if __name__ == "__main__":
-    
-    try: 
-        main()
-    except: 
-        print("An error has occured.")
+with open("SysAdminCronJob.txt", "a") as f:
+	f.write("TOP 10 PROCESSESS: " + p)
+
+
