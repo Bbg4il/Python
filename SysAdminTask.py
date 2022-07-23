@@ -17,6 +17,7 @@ AbigailSauco
 import os
 import platform
 import psutil
+import pandas #used for nlargest to sort memory percentage from largest to smallest by 
 
 #import datetime and pytz for correct time zone
 import datetime
@@ -53,13 +54,26 @@ for process in psutil.process_iter ():
 print("\nThe total number of processes currently running is: ", c)
 
 with open("SysAdminCronJob.txt", "a") as f:
-	f.write("DATE AND TIME:" + current_time)
+	f.write("TOTAL # of PROCESSES RUNNING:" + c)
 
 #List top ten processes NAMES/Command, ID and memory sorted from most memory.
-TOP_PROC = os.system("ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head")
-print("TOP 10 PROCESSESS: " + TOP_PROC)
+processArray = []
+processObj = psutil.process_iter(attrs=None, ad_value=None)
+print(processObj)
+
+lines=0
+
+for proc in processObj:
+	processArray.append([proc.pid, proc.name(), proc.memory_percent()])
+
+sortedMem = sorted(processArray, key=lambda record:record[2], reverse=True).nlargest(n=10, columns=[proc.memory_percent()])
+
+for p in range (0, 10, 1):
+	print(p)
+
+print("TOP 10 PROCESSESS: " + p)
 
 with open("SysAdminCronJob.txt", "a") as f:
-	f.write("TOP 10 PROCESSESS: " + TOP_PROC)
+	f.write("TOP 10 PROCESSESS: " + p)
 
 
