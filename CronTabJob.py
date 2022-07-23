@@ -35,5 +35,3 @@ job.minute.every(1)
 
 # Clearing the restrictions of a job
 job.clear()
-
-#
