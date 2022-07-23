@@ -5,6 +5,13 @@ This file establishes a connection to the server and transmits information.
 Appends information to a file created on the server.
 Terminate connection once information is received and input into file.
 
+Client Socket:
+socket
+connect
+send
+receive
+close
+
 Abigail Sauco
 000860402
 07.07.22
@@ -22,13 +29,14 @@ SIZE = 1024
 def main():
     
 #Staring a TCP socket
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 #Connecting to the server
 client.connect(IP, PORT)
 
 #Opening and reading the file data
 file = open("data/SysAdminCronJob.txt", "r")
+
 try: 
     data = file.read()
 except:
@@ -52,13 +60,7 @@ file.close()
 client.close()
 if __name__ == "__main__":
     
-try: 
-    main()
-except: 
-    print("An error has occured.")
- 
-
-
-
-
-
+    try: 
+        main()
+    except: 
+        print("An error has occured.")
